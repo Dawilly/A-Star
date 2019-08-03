@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace A_Star {
-    internal class BinaryHeap<T> {
+    public class BinaryHeap<T> {
         private class Node {
             public int key;
             public T data;
@@ -101,11 +101,16 @@ namespace A_Star {
         public void Delete(int index) {
             Decrease(index, -1);
             Extract();
+            return;
         }
 
         public void Decrease(int index, int newKey) {
             _array[index].key = newKey;
-
+            while((index != 0) && (CompareWithParent(index))) {
+                Swap(index, Parent(index));
+                index = Parent(index);
+            }
+            return;
         }
     }
 }
