@@ -4,50 +4,45 @@ using System.Text;
 
 namespace A_Star {
     public class PriorityQueue<T> {
-        //private Node head;
-        private int size;
+        private class Node {
+            public int priority;
+            public T data;
+
+            public Node(int priority, T data) {
+                this.priority = priority;
+                this.data = data;
+            }
+        }
+        private BinaryHeap<Node> heap;
+
+        public int Size => heap.Size;
+        public int Capacity => heap.Capacity;
 
         public PriorityQueue() {
-            size = 0;
+            heap = new BinaryHeap<Node>(ReadPriority, WritePriority);
         }
 
-        //private Node CreateNode(T newData, int priority) {
-        //    return new Node(newData, priority);
-        //}
-
-        //public T Peek() {
-        //    return (T) head.Peek();
-        //}
-
-        public void Pop() {
-
+        private static int ReadPriority(Node node) {
+            return node.priority;
         }
 
-        //public void Push(T newData, int priority) {
-        //    Node newNode = CreateNode(newData, priority);
-        //    Node start = head;
+        private static void WritePriority(Node node, int value) {
+            node.priority = value;
+        }
 
-        //    // Case 1: Head has less priority
-        //    if (head.Priority > priority) {
-        //        newNode.Next = head;
-        //        head.Prev = newNode;
-        //        head = newNode;
-        //        return;
-        //    } 
+        public T Peek() {
+            return heap.GetMin.data;
+        }
 
-        //    // Case 2: Middle of list
-        //    while(start.Next != null) {
-        //        if (start.Next.Priority >= priority) {
-                    
-        //            return;
-        //        }
-        //        start = start.Next;
-        //    }
+        public T Dequeue() {
+            Node removedNode = heap.Extract();
+            return removedNode.data;
+        }
 
-        //    // Case 3: End of the list
-        //    newNode.Next = start.Next;
-        //    start.Next = newNode;
-        //    return;
-        //}
+        public void Enqueue(int priority, T data) {
+            Node freshNode = new Node(priority, data);
+            heap.Insert(freshNode);
+            return;
+        }
     }
 }

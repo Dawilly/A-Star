@@ -4,36 +4,35 @@ using System.Text;
 
 namespace A_Star {
     public class BinaryHeap<T> {
-        private class Node {
-            public int key;
-            public T data;
+        private T[] _array;
+        private Reader reader;
+        private Writer writer;
 
-            public Node(int key, T data) {
-                this.key = key;
-                this.data = data;
-            }
-        }
+        public delegate void Writer(T data, int val);
+        public delegate int Reader(T data);
 
-        private Node[] _array;
-
-        public T GetMin => _array[0].data;
+        public T GetMin => _array[0];
         public int Size { get; private set; }
         public int Capacity => _array.Length;
 
-        public BinaryHeap() {
-            _array = new Node[1];
+
+
+        public BinaryHeap(Reader reader, Writer writer) {
+            this.reader = reader;
+            this.writer = writer;
+            _array = new T[1];
             Size = 0;
         }
 
         private void Swap(int indexOne, int indexTwo) {
-            Node temp = _array[indexOne];
+            T temp = _array[indexOne];
             _array[indexOne] = _array[indexTwo];
             _array[indexTwo] = temp;
             return;
         }
 
         private bool CompareWithParent(int index) {
-            return _array[Parent(index)].key > _array[index].key;
+            return reader(_array[Parent(index)]) > reader(_array[index]);
         }
 
         private int Parent(int index) {
@@ -52,10 +51,10 @@ namespace A_Star {
             int left = Left(index);
             int right = Right(index);
             int smol = index;
-            if ((left < Size) && (_array[left].key < _array[index].key)) {
+            if ((left < Size) && (reader(_array[left]) < reader(_array[index]))) {
                 smol = left;
             } 
-            if ((right < Size) && (_array[right].key < _array[smol].key)) {
+            if ((right < Size) && (reader(_array[right]) < reader(_array[smol]))) {
                 smol = right;
             }
             if (smol != index) {
@@ -65,12 +64,12 @@ namespace A_Star {
             return;
         }
 
-        public void Insert(int priority, T item) {
+        public void Insert(T item) {
             if (Size == _array.Length) {
                 Array.Resize(ref _array, _array.Length * 2);
             }
             int key = Size;
-            _array[key] = new Node(priority, item);
+            _array[key] = item;
             Size++;
 
             while ((key != 0) && (CompareWithParent(key))) {
@@ -84,13 +83,13 @@ namespace A_Star {
             T results;
             if (Size == 0) return default;
             if (Size == 1) {
-                results = _array[0].data;
+                results = _array[0];
                 Size--;
-                _array[0] = null;
+                _array[0] = default;
                 return results;
             }
 
-            results = _array[0].data;
+            results = _array[0];
             _array[0] = _array[Size - 1];
             Size--;
             Heapify(0);
@@ -105,7 +104,7 @@ namespace A_Star {
         }
 
         public void Decrease(int index, int newKey) {
-            _array[index].key = newKey;
+            writer(_array[index], newKey);
             while((index != 0) && (CompareWithParent(index))) {
                 Swap(index, Parent(index));
                 index = Parent(index);
